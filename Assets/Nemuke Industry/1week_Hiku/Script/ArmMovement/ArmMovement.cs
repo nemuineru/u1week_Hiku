@@ -7,6 +7,11 @@ using UnityEngine;
 public class ArmMovement : MonoBehaviour
 {
 
+    [SerializeField]
+    internal Rigidbody Hand;
+    [SerializeField]
+    internal Transform CarryPoint;
+    
     // Update is called once per frame
     void Update()
     {

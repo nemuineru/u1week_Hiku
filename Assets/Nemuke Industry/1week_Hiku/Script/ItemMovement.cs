@@ -4,6 +4,8 @@ using UnityEngine;
 
 public class ItemMovement : MonoBehaviour
 {
+    [SerializeField]
+    internal float weight = 0.10f;
     const float waterGravDrag = 0.001f;
     const float minimumRotate = 0.001f;
     const float lerp = 0.03f;
@@ -14,6 +16,7 @@ public class ItemMovement : MonoBehaviour
     void Start()
     {
         selfBody = GetComponent<Rigidbody>();
+        selfBody.mass = weight;
     }
 
     // Update is called once per frame
@@ -23,9 +26,18 @@ public class ItemMovement : MonoBehaviour
         selfBody.velocity += Physics.gravity * Time.fixedDeltaTime * (selfBody.position.y >= 0 ? 3.0f : waterGravDrag);
     }
 
-    void setDevoidRigid()
-    { 
-        
+    internal void setCarrying(bool setVal)
+    {
+        selfBody.isKinematic = setVal;
+    }
+    internal void setPulse(Vector3 pulseAdd)
+    {
+        selfBody.AddForce(pulseAdd, ForceMode.Impulse);
+    }
+    
+    internal void setPos(Vector3 positions)
+    {
+        selfBody.position = (positions);
     }
 
 }

@@ -9,12 +9,16 @@ public class PlayerMovement : MonoBehaviour
     //アーム作らないとなー.
     [SerializeField]
     List<ItemMovement> carryedItems;
+
+    //ArmMovementを登録し、Handに設定されたRigidBodyを動かす..
+    [SerializeField]
+    ArmMovement arm;
     const float waterGravDrag = 0.001f;
     const float minimumRotate = 0.001f;
     const float lerp = 0.3f;
 
     //MaxArm Range. これを超えると移動に制限がかかる.
-    const float MxArmRange = 4.0f;
+    const float MxArmRange = 3.1f;
     Vector3 speed = new Vector3(0.20f, 0.12f);
     float mxspeed = 2.5f;
     Rigidbody selfBody;
@@ -28,6 +32,7 @@ public class PlayerMovement : MonoBehaviour
     void FixedUpdate()
     {
         PlayerVelSet();
+        ItemCarrySet();
     }
 
     void PlayerVelSet()
@@ -58,11 +63,27 @@ public class PlayerMovement : MonoBehaviour
 
     void ItemCarrySet()
     {
-        foreach (ItemMovement i in carryedItems)
+        //もしアイテム回収範囲にいるなら持ち出す.
+        for (int index = 0; index < carryedItems.Count; index++)
         {
-            if ((transform.position - i.transform.position).magnitude > MxArmRange)
-            { 
+            ItemMovement it = carryedItems[index];
+            if (it != null)
+            {
+                if (it.transform.parent == null)
+                {
+                    it.transform.parent = arm.CarryPoint.transform;
+                    it.transform.position = arm.CarryPoint.position;
+                    it.setCarrying(true);
+                }
                 
+                Vector3 e = (it.transform.position - transform.position);
+                float tempermix = e.magnitude - MxArmRange;
+                if (tempermix > 0)
+                {
+                    //作用反作用.
+                    selfBody.AddForce(it.weight * e.normalized * tempermix, ForceMode.Impulse);
+                    arm.Hand.AddForce(- it.weight * e.normalized * tempermix * Time.fixedDeltaTime, ForceMode.Force);
+                }
             }
         }
     }
