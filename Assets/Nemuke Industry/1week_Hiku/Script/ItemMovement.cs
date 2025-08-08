@@ -13,13 +13,14 @@ public class ItemMovement : MonoBehaviour
     // Start is called before the first frame update
     void Start()
     {
-
+        selfBody = GetComponent<Rigidbody>();
     }
 
     // Update is called once per frame
     void Update()
-    {
-
+    {        
+        //重力値の設定..
+        selfBody.velocity += Physics.gravity * Time.fixedDeltaTime * (selfBody.position.y >= 0 ? 3.0f : waterGravDrag);
     }
 
     void setDevoidRigid()

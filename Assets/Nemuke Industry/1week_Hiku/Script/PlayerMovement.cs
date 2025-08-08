@@ -11,7 +11,10 @@ public class PlayerMovement : MonoBehaviour
     List<ItemMovement> carryedItems;
     const float waterGravDrag = 0.001f;
     const float minimumRotate = 0.001f;
-    const float lerp = 0.03f;
+    const float lerp = 0.3f;
+
+    //MaxArm Range. これを超えると移動に制限がかかる.
+    const float MxArmRange = 4.0f;
     Vector3 speed = new Vector3(0.20f, 0.12f);
     float mxspeed = 2.5f;
     Rigidbody selfBody;
@@ -48,13 +51,19 @@ public class PlayerMovement : MonoBehaviour
         if (Mathf.Abs(velMag) > minimumRotate)
         {
             //真っ逆さまにはしない.
-            Vector3 tilt = Mathf.Sign(selfBody.velocity.x) * Vector3.right * 5.0f;
+            Vector3 tilt = Mathf.Sign(selfBody.velocity.x) * Vector3.right * 1.0f;
             transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(selfBody.velocity + tilt), lerp);
         }
     }
 
     void ItemCarrySet()
-    { 
-
+    {
+        foreach (ItemMovement i in carryedItems)
+        {
+            if ((transform.position - i.transform.position).magnitude > MxArmRange)
+            { 
+                
+            }
+        }
     }
 }
