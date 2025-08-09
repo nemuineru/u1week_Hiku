@@ -24,13 +24,13 @@ public class InputInstance : MonoBehaviour
             get { return self.inputBasic.Base.Select_Click.ReadValue<float>(); }
         }
 
-        
+
         public float RightClick
         {
             get { return self.inputBasic.Base.Attack_Click.ReadValue<float>(); }
         }
 
-        
+
         public Vector2 MovementInput
         {
             get { return self.inputBasic.Base.ControllerAxis.ReadValue<Vector2>(); }
@@ -40,24 +40,24 @@ public class InputInstance : MonoBehaviour
 
         public Vector2 ScreenMousePos
         {
-            get 
-            { 
-                return self.inputBasic.Base.CursorPosition.ReadValue<Vector2>();                
+            get
+            {
+                return self.inputBasic.Base.CursorPosition.ReadValue<Vector2>();
             }
         }
 
         public void AnalogButtonSet(float vals, ref int inputNum)
-        {                
-            if(vals > 0)
+        {
+            if (vals > 0)
             {
-                if(inputNum == 0)
+                if (inputNum >= 0)
                 {
-                    inputNum = 1;
+                    inputNum += 1;
                 }
             }
             else
             {
-                if( inputNum > 0)
+                if (inputNum > 0)
                 {
                     inputNum = -1;
                 }
@@ -66,6 +66,37 @@ public class InputInstance : MonoBehaviour
                     inputNum = 0;
                 }
             }
+        }
+
+        public Vector3 ScreenPosCalc()
+        {
+            Plane ZPlane = new Plane(Vector3.forward, Vector3.zero);
+            Vector3 XYpos = Vector3.zero;
+
+            Vector3 scPos_Raw = InputInstance.self.inputValues.ScreenMousePos;
+
+            Ray ray = Camera.main.ScreenPointToRay(scPos_Raw);
+
+
+            scPos_Raw.z = 1.0f;
+
+            //この状態だとZ=0のカメラ位置が取れない.
+            Vector3 scPos = Camera.main.ScreenToWorldPoint(scPos_Raw);
+            Vector3 campos = Camera.main.transform.position;
+
+            //Z=0上のPlaneにHitした際..
+            if(ZPlane.Raycast(ray,out var enter))
+            {
+                XYpos = ray.origin + ray.direction.normalized * enter;
+            }
+
+            //Debug.Log("Point At " + XYpos);
+
+            Debug.DrawLine(XYpos, Camera.main.transform.position);
+            Debug.DrawLine(XYpos, XYpos + Vector3.up);
+            Debug.DrawLine(XYpos, XYpos - Vector3.forward);
+            Debug.DrawLine(XYpos, XYpos - Vector3.right);
+            return XYpos;
         }
     }
     
