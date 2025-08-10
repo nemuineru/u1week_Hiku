@@ -16,7 +16,7 @@ public class PlayerMovement : MonoBehaviour
     ArmMovement arm;
     const float waterGravDrag = 0.005f;
     const float minimumRotate = 0.001f;
-    const float lerp = 0.3f;
+    const float Plerp = 0.3f;
 
     //MaxArm Range. これを超えると移動に制限がかかる.
     internal float MxArmRange = 3.1f;
@@ -61,7 +61,7 @@ public class PlayerMovement : MonoBehaviour
         {
             //真っ逆さまにはしない.
             Vector3 tilt = Mathf.Sign(selfBody.velocity.x) * Vector3.right * 1.0f;
-            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(selfBody.velocity + tilt), lerp);
+            transform.rotation = Quaternion.Lerp(transform.rotation, Quaternion.LookRotation(selfBody.velocity + tilt), Plerp);
         }
     }
 
@@ -120,9 +120,9 @@ public class PlayerMovement : MonoBehaviour
                 if (it.transform.parent == null)
                 {
                     ARMON(it);
-                    it.transform.position = it.transform.position + SetCarryPos;
                 }
-
+                it.transform.localPosition = Vector3.Lerp(it.transform.localPosition,SetCarryPos,Plerp);
+                
                 //距離が離れた際の作用..
                 Vector3 e = (it.transform.position - transform.position);
                 float tempermix = e.magnitude - MxArmRange;
@@ -151,7 +151,8 @@ public class PlayerMovement : MonoBehaviour
     void ARMON(ItemMovement it)
     {
         arm.Hand.AddForce((it.transform.position - arm.Hand.position).normalized * Time.fixedDeltaTime, ForceMode.Force);
-        it.transform.parent = arm.Hand.transform;
+        arm.Hand.MovePosition(it.transform.position);
+        it.transform.parent = arm.CarryPoint.transform;
         it.setCarrying(true, arm.Hand);
     }
 }
